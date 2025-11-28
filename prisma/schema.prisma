@@ -1,0 +1,118 @@
+// Schema do Prisma para Sistema de Controle Financeiro
+// Configurado para SQLite com possibilidade de migração futura
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== MODELOS ====================
+
+// Modelo de Usuário - Controle de acesso ao sistema
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  wallets      Wallet[]
+  categories   Category[]
+  transactions Transaction[]
+  transfers    Transfer[]
+
+  @@map("users")
+}
+
+// Modelo de Carteira - Origem do dinheiro (conta banco, carteira física, etc)
+model Wallet {
+  id          String   @id @default(uuid())
+  name        String // Ex: "Conta Corrente", "Carteira Física"
+  description String?
+  balance     Float    @default(0) // Saldo atual
+  color       String   @default("#3B82F6") // Cor para identificação visual
+  icon        String   @default("wallet") // Ícone para UI
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  userId               String
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions         Transaction[]
+  transfersFrom        Transfer[]    @relation("TransferFrom")
+  transfersTo          Transfer[]    @relation("TransferTo")
+
+  @@map("wallets")
+}
+
+// Modelo de Categoria - Tipos de entrada e saída
+model Category {
+  id          String   @id @default(uuid())
+  name        String // Ex: "Salário", "Alimentação"
+  description String?
+  type        String // "INCOME" ou "EXPENSE"
+  color       String   @default("#3B82F6")
+  icon        String   @default("tag")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@map("categories")
+}
+
+// Modelo de Lançamento - Entradas e Saídas
+model Transaction {
+  id          String    @id @default(uuid())
+  description String
+  amount      Float // Valor do lançamento
+  type        String // "INCOME" ou "EXPENSE"
+  dueDate     DateTime // Data de vencimento
+  paymentDate DateTime? // Data do pagamento (null se não pago)
+  isPaid      Boolean   @default(false) // Status de pagamento
+  isRecurring Boolean   @default(false) // Se é recorrente
+  notes       String? // Observações adicionais
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relacionamentos
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  walletId   String
+  wallet     Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@map("transactions")
+}
+
+// Modelo de Transferência - Transferências entre carteiras
+model Transfer {
+  id          String   @id @default(uuid())
+  amount      Float // Valor transferido
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fromWalletId String
+  fromWallet   Wallet @relation("TransferFrom", fields: [fromWalletId], references: [id], onDelete: Cascade)
+  toWalletId   String
+  toWallet     Wallet @relation("TransferTo", fields: [toWalletId], references: [id], onDelete: Cascade)
+
+  @@map("transfers")
+}
