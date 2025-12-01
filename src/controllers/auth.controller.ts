@@ -32,9 +32,9 @@ const generateToken = (userId: string): string => {
   const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   
   return jwt.sign(
-    { userId },
-    secret,
-    { expiresIn }
+    { userId } as object,
+    secret as string,
+    { expiresIn: expiresIn as string }
   );
 };
 
