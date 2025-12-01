@@ -6,11 +6,15 @@ dist/
 
 # Environment
 .env
+.env.local
+.env.*.local
 
 # Database
 *.db
 *.db-journal
-prisma/migrations/
+
+# NÃO IGNORE as migrations - elas devem ser versionadas!
+# prisma/migrations/  ← COMENTADO!
 
 # Logs
 logs/

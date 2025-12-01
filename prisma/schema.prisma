@@ -1,12 +1,12 @@
 // Schema do Prisma para Sistema de Controle Financeiro
-// Configurado para SQLite com possibilidade de migração futura
+// Configurado para PostgreSQL em produção e SQLite em desenvolvimento
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
