@@ -28,10 +28,12 @@ const loginSchema = z.object({
  * Gera um token JWT para o usuário
  */
 const generateToken = (userId: string): string => {
-  const secret = process.env.JWT_SECRET || 'secret';
-  const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
-  
-  return jwt.sign({ userId }, secret, { expiresIn });
+  const token = jwt.sign(
+    { userId },
+    String(process.env.JWT_SECRET || 'secret'),
+    { expiresIn: String(process.env.JWT_EXPIRES_IN || '7d') }
+  );
+  return token;
 };
 
 // ==================== CONTROLLERS ====================
