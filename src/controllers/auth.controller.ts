@@ -30,7 +30,7 @@ const loginSchema = z.object({
 const generateToken = (userId: string): string => {
   const secret: string = process.env.JWT_SECRET || 'secret';
   const options: SignOptions = {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as string | number
   };
   
   return jwt.sign({ userId }, secret, options);
