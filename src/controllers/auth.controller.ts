@@ -28,11 +28,9 @@ const loginSchema = z.object({
  * Gera um token JWT para o usuário
  */
 const generateToken = (userId: string): string => {
-  const token = jwt.sign(
-    { userId },
-    String(process.env.JWT_SECRET || 'secret'),
-    { expiresIn: String(process.env.JWT_EXPIRES_IN || '7d') }
-  );
+  const secret = process.env.JWT_SECRET || 'secret';
+  // Usando apenas 2 parâmetros primeiro para evitar erro de tipos
+  const token = jwt.sign({ userId, exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) }, secret);
   return token;
 };
 
