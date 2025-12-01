@@ -13,8 +13,12 @@ dist/
 *.db
 *.db-journal
 
-# NÃO IGNORE as migrations - elas devem ser versionadas!
-# prisma/migrations/  ← COMENTADO!
+# Migrations do SQLite (ignorar porque produção usa PostgreSQL)
+# Se quiser versionar migrations, comente esta linha
+prisma/migrations/
+
+# Backup de migrations
+prisma/migrations_backup*/
 
 # Logs
 logs/
