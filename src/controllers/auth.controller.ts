@@ -5,7 +5,7 @@
 
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 
@@ -28,12 +28,10 @@ const loginSchema = z.object({
  * Gera um token JWT para o usuário
  */
 const generateToken = (userId: string): string => {
-  const secret: string = process.env.JWT_SECRET || 'secret';
-  const options: SignOptions = {
-    expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as string | number
-  };
+  const secret = process.env.JWT_SECRET || 'secret';
+  const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
   
-  return jwt.sign({ userId }, secret, options);
+  return jwt.sign({ userId }, secret, { expiresIn });
 };
 
 // ==================== CONTROLLERS ====================
