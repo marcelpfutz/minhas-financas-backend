@@ -81,10 +81,21 @@ model Transaction {
   dueDate     DateTime // Data de vencimento
   paymentDate DateTime? // Data do pagamento (null se não pago)
   isPaid      Boolean   @default(false) // Status de pagamento
-  isRecurring Boolean   @default(false) // Se é recorrente
-  notes       String? // Observações adicionais
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  
+  // Campos de Recorrência
+  isRecurring      Boolean  @default(false) // Se é recorrente
+  recurringType    String? // "WEEKLY", "MONTHLY", "YEARLY", "INDEFINITE"
+  recurringGroupId String? // Agrupa lançamentos recorrentes
+  
+  // Campos de Parcelamento
+  isInstallment      Boolean @default(false) // Se é parcelado
+  installments       Int? // Número total de parcelas
+  currentInstallment Int? // Número da parcela atual (1, 2, 3...)
+  installmentGroupId String? // Agrupa lançamentos parcelados
+  
+  notes     String? // Observações adicionais
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relacionamentos
   userId     String
