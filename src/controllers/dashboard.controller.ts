@@ -13,17 +13,31 @@ import { prisma } from '../lib/prisma';
 export const getSummary = async (req: Request, res: Response) => {
   try {
     const userId = req.userId!;
-    const { month, year } = req.query;
+    const { month, year, startDate: startDateParam, endDate: endDateParam } = req.query;
 
-    // Define o período (mês atual se não especificado)
-    const now = new Date();
-    const targetMonth = month ? parseInt(month as string) : now.getMonth() + 1;
-    const targetYear = year ? parseInt(year as string) : now.getFullYear();
+    let startDate: Date;
+    let endDate: Date;
+    let targetMonth: number;
+    let targetYear: number;
 
-    const startDate = new Date(targetYear, targetMonth - 1, 1);
-    const endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59);
+    // Se startDate e endDate forem fornecidos, usa eles (para filtros customizados)
+    if (startDateParam && endDateParam) {
+      startDate = new Date(startDateParam as string);
+      endDate = new Date(endDateParam as string);
+      targetMonth = startDate.getMonth() + 1;
+      targetYear = startDate.getFullYear();
+    } else {
+      // Caso contrário, usa mês/ano (comportamento padrão)
+      const now = new Date();
+      targetMonth = month ? parseInt(month as string) : now.getMonth() + 1;
+      targetYear = year ? parseInt(year as string) : now.getFullYear();
+      startDate = new Date(targetYear, targetMonth - 1, 1);
+      endDate = new Date(targetYear, targetMonth, 0, 23, 59, 59);
+    }
 
     // Busca dados em paralelo
+    const now = new Date(); // Para verificar lançamentos vencidos
+    
     const [
       wallets,
       totalIncome,
