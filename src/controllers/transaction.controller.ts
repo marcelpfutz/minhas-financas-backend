@@ -208,6 +208,13 @@ export const createTransaction = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Carteira não encontrada' });
     }
 
+    // Verifica se a carteira está ativa
+    if (!wallet.isActive) {
+      return res.status(400).json({ 
+        error: 'Não é possível criar lançamentos em uma carteira inativa' 
+      });
+    }
+
     if (!category) {
       return res.status(404).json({ error: 'Categoria não encontrada' });
     }
