@@ -22,12 +22,30 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relacionamentos
-  wallets      Wallet[]
-  categories   Category[]
-  transactions Transaction[]
-  transfers    Transfer[]
+  wallets           Wallet[]
+  categories        Category[]
+  transactions      Transaction[]
+  transfers         Transfer[]
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+// Modelo de Token de Recuperação de Senha - Segurança máxima
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique // Token criptografado (hash)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime // Token expira em X horas
+  usedAt    DateTime? // Quando foi usado (null = não usado ainda)
+  ipAddress String? // IP de quem solicitou (auditoria)
+  userAgent String? // Browser/device de quem solicitou (auditoria)
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 // Modelo de Carteira - Origem do dinheiro (conta banco, carteira física, etc)
