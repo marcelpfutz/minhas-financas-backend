@@ -12,6 +12,7 @@ import { categoryRoutes } from './routes/category.routes';
 import { transactionRoutes } from './routes/transaction.routes';
 import { transferRoutes } from './routes/transfer.routes';
 import { dashboardRoutes } from './routes/dashboard.routes';
+import reportRoutes from './routes/report.routes';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -45,6 +46,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/transfers', transferRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Rota para endpoints não encontrados
 app.use('*', (req, res) => {
